@@ -1,0 +1,86 @@
+<html>
+	<head>
+		<title>TuneSearch Results for {{query}}</title>
+		<link rel="stylesheet" type="text/css" href="/static/searchengine.css" media="screen" />
+
+			<script>
+			function init(){
+				var params = location.search;
+				var page = params.split("&")[2].split("=")[1];	
+				
+				// alert(page);
+				var prev = document.getElementById('prev');
+				if(page === "1"){
+					prev.setAttribute("hidden", "true");
+				} else {
+					prev.removeAttribute("hidden");
+				}
+				var row_num = document.getElementsByTagName("strong")[0].innerText;
+				// alert(row_num);
+				if(row_num != 20){
+					next.setAttribute("hidden", "true");
+				} else {
+					next.removeAttribute("hidden");
+				}
+			}
+
+			function increment(){
+				var params = location.search;
+				var page = params.split("&")[2].split("=")[1];
+				var  hidden = document.getElementById('page');
+				hidden.value = parseInt(page) + 1;
+				document.getElementById('form').submit();
+			}
+
+			function decrement(){
+				var params = location.search;
+				var page = params.split("&")[2].split("=")[1];
+				var  hidden = document.getElementById('page');
+				hidden.value = parseInt(page) - 1;
+				document.getElementById('form').submit();
+			}
+			</script>
+	</head>
+	<body onload="init()">
+		<div id="results_top">
+			<div id="logo">
+				<img src="/static/header.png" width=100px height=30px>
+			</div>
+			<div id="searchbar">
+				 <form action="{{ url_for('dosearch') }}" method="GET" id="form">
+					<div>
+						<input type="radio" name="query_type" value="or" checked>
+						<label for="or">OR</label>
+						<input type="radio" name="query_type" value="and">
+						<label for="and">AND</label>
+						<input type="text" maxlength=50 size=50 name="query" value="{{query}}">
+						<input hidden="true" name="p" value="1" id="page">
+						<input type="submit" value="Search">
+						
+					</div>
+				</form>
+			</div>
+		</div>
+
+        <div>
+			<button width="5px" onclick="decrement()" id="prev" >Previous</button>
+			<button width="5px" margin-left="2px" onclick="increment()" id="next">Next</button>
+		</div>
+
+
+		{% if results > 0 %}
+		<p><strong>{{ results }}</strong> <strong>results for </strong>{{query}}</p>
+
+		{% for result in search_results %}
+		<p><strong><a href="http://www.lyricsfreak.com{{ result[2] }}" target="_blank">{{ result[0] }}</a></strong> <em>by</em> {{ result[1] }} </p>
+		{% endfor %}
+		{% else %}
+
+
+		<p><strong>No results for </strong>{{query}}</p>
+		{% endif %}
+
+		
+
+	</body>
+</html>
